@@ -5,8 +5,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - BASE_IMAGE_REPOSITORY="dkr.ecr.${AWS_REGION}.amazonaws.com"
-      - aws --region $AWS_REGION ecr get-login-password | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-  build:
+      - docker login -u AWS -p $(aws ecr get-login-password --region ${AWS_REGION}) "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
