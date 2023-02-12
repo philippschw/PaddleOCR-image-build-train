@@ -5,7 +5,8 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - BASE_IMAGE_REPOSITORY="dkr.ecr.${AWS_REGION}.amazonaws.com"
-      - docker login -u AWS -p $(aws ecr get-login-password --region ${AWS_REGION}) "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+      - aws --region $AWS_REGION ecr get-login-password | docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
@@ -16,7 +17,7 @@ phases:
       - if [ $CODEBUILD_BUILD_SUCCEEDING = 0 ]; then exit 1; fi
       - echo Build completed on `date`
       - echo Logging in to Amazon ECR...
-      - docker login -u AWS -p $(aws ecr get-login-password --region ${AWS_REGION}) $AWS_ACCOUNT_ID.BASE_IMAGE_REPOSITORY
+      - aws --region $AWS_REGION ecr get-login-password | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.$BASE_IMAGE_REPOSITORY
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.$BASE_IMAGE_REPOSITORY/$IMAGE_REPO_NAME:$IMAGE_TAG
       - aws --region $AWS_REGION sagemaker create-image-version --image-name $IMAGE_REPO_NAME --base-image $AWS_ACCOUNT_ID.$BASE_IMAGE_REPOSITORY/$IMAGE_REPO_NAME:$IMAGE_TAG
