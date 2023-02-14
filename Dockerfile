@@ -1,5 +1,26 @@
 FROM registry.baidubce.com/paddlepaddle/paddle:2.2.2-gpu-cuda10.2-cudnn7
 
+ARG NB_USER="sagemaker-user"
+ARG NB_UID="0"
+ARG NB_GID="0"
+
+# Setup the "sagemaker-user" user with root privileges.
+RUN \
+    apt-get update && \
+    apt-get install -y sudo && \
+    useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    chmod g+w /etc/passwd && \
+    echo "${NB_USER}    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
+    # Prevent apt-get cache from being persisted to this layer.
+    rm -rf /var/lib/apt/lists/*
+
+USER $NB_UID
+
+ENV SHELL=/bin/bash \
+    NB_USER=$NB_USER \
+    NB_UID=$NB_UID \
+    NB_GID=$NB_GID 
+
 ENV LANG=en_US.utf8
 ENV LANG=C.UTF-8
 
