@@ -8,7 +8,7 @@ ARG NB_GID="0"
 RUN \
     apt-get update && \
     apt-get install -y sudo && \
-    useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    useradd -o -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     chmod g+w /etc/passwd && \
     echo "${NB_USER}    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     # Prevent apt-get cache from being persisted to this layer.
